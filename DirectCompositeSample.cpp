@@ -241,13 +241,22 @@ void D3D12HelloTexture::LoadAssets()
 
 	// Create the vertex buffer.
 	{
-		// Define the geometry for a triangle.
-		Vertex triangleVertices[] =
+		// Define the geometry for a circle.
+		Vertex triangleVertices[CircleSegments + 1] =
 		{
-			{ { 0.0f, 0.25f * m_aspectRatio, 0.0f }, { 0.5f, 0.0f } },
-			{ { 0.25f, -0.25f * m_aspectRatio, 0.0f }, { 1.0f, 1.0f } },
-			{ { -0.25f, -0.25f * m_aspectRatio, 0.0f }, { 0.0f, 1.0f } }
+			{ { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f } }
 		};
+
+        for (UINT i = 0; i < CircleSegments; ++i)
+        {
+            float theta = 2  * DirectX::XM_PI * i / (float)(CircleSegments - 1);
+            float x = sinf(theta);
+            float y = cosf(theta);
+
+            Vertex& v = triangleVertices[i + 1];
+            v.position = DirectX::XMFLOAT3(x * 0.5f, y * 0.5f * m_aspectRatio, 0.0f);
+            v.uv = DirectX::XMFLOAT2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
+        }
 
 		const UINT vertexBufferSize = sizeof(triangleVertices);
 
@@ -275,6 +284,45 @@ void D3D12HelloTexture::LoadAssets()
 		m_vertexBufferView.StrideInBytes = sizeof(Vertex);
 		m_vertexBufferView.SizeInBytes = vertexBufferSize;
 	}
+
+    // Create the index buffer
+    {
+        // Define the geometry for a circle.
+        UINT16 triangleIndices[3 * CircleSegments];
+
+        for (UINT i = 0; i < CircleSegments; ++i)
+        {
+            triangleIndices[i * 3 + 0] = 0;
+            triangleIndices[i * 3 + 1] = 1 + i;
+            triangleIndices[i * 3 + 2] = 2 + i;
+        }
+
+        const UINT indexBufferSize = sizeof(triangleIndices);
+
+        // Note: using upload heaps to transfer static data like vert buffers is not 
+        // recommended. Every time the GPU needs it, the upload heap will be marshalled 
+        // over. Please read up on Default Heap usage. An upload heap is used here for 
+        // code simplicity and because there are very few verts to actually transfer.
+        ThrowIfFailed(m_device->CreateCommittedResource(
+            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            D3D12_HEAP_FLAG_NONE,
+            &CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize),
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&m_indexBuffer)));
+
+        // Copy the index data to the index buffer.
+        UINT8* pIndexDataBegin;
+        CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
+        ThrowIfFailed(m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin)));
+        memcpy(pIndexDataBegin, triangleIndices, sizeof(triangleIndices));
+        m_indexBuffer->Unmap(0, nullptr);
+
+        // Intialize the index buffer view
+        m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
+        m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
+        m_indexBufferView.SizeInBytes = indexBufferSize;
+    }
 
 	// Note: ComPtr's are CPU objects but this resource needs to stay in scope until
 	// the command list that references it has finished executing on the GPU.
@@ -485,7 +533,8 @@ void D3D12HelloTexture::PopulateCommandList()
 	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-	m_commandList->DrawInstanced(3, 1, 0, 0);
+    m_commandList->IASetIndexBuffer(&m_indexBufferView);
+	m_commandList->DrawIndexedInstanced(CircleSegments * 3, 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));

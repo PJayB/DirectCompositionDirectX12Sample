@@ -33,6 +33,7 @@ public:
 	virtual void OnDestroy();
 
 private:
+    static const UINT CircleSegments = 64;
     static const UINT NumTextureColors = 8;
     static const UINT NumAlphaShades = 8;
 	static const UINT FrameCount = 2;
@@ -64,7 +65,9 @@ private:
 
 	// App resources.
 	ComPtr<ID3D12Resource> m_vertexBuffer;
+    ComPtr<ID3D12Resource> m_indexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+    D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 	ComPtr<ID3D12Resource> m_texture;
 
 	// Synchronization objects.
