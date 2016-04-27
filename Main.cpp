@@ -15,6 +15,6 @@
 _Use_decl_annotations_
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
-	DirectCompositeSample sample(1280, 720, L"D3D12 Hello Texture");
+	DirectCompositeSample sample(512, 512, L"DirectComposite DirectX 12 Sample");
 	return Win32Application::Run(&sample, hInstance, nCmdShow);
 }

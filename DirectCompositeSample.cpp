@@ -254,7 +254,7 @@ void DirectCompositeSample::LoadAssets()
             float y = cosf(theta);
 
             Vertex& v = triangleVertices[i + 1];
-            v.position = DirectX::XMFLOAT3(x * 0.5f, y * 0.5f * m_aspectRatio, 0.0f);
+            v.position = DirectX::XMFLOAT3(x, y * m_aspectRatio, 0.0f);
             v.uv = DirectX::XMFLOAT2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
         }
 
