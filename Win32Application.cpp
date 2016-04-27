@@ -32,15 +32,17 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 	windowClass.lpszClassName = L"DXSampleClass";
 	RegisterClassEx(&windowClass);
 
+    static const auto windowStyle = WS_POPUP;
+
 	RECT windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
-	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+	AdjustWindowRect(&windowRect, windowStyle, FALSE);
 
 	// Create the window and store a handle to it.
 	m_hwnd = CreateWindowEx(
         WS_EX_NOREDIRECTIONBITMAP,
 		windowClass.lpszClassName,
 		pSample->GetTitle(),
-		WS_OVERLAPPEDWINDOW,
+		windowStyle,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
 		windowRect.right - windowRect.left,
