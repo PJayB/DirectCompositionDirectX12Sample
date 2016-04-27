@@ -303,7 +303,7 @@ void D3D12HelloTexture::LoadAssets()
 
 		D3D12_SUBRESOURCE_DATA textureData = {};
 		textureData.pData = &texture[0];
-		textureData.RowPitch = TextureWidth * TexturePixelSize;
+		textureData.RowPitch = TextureWidth * sizeof(UINT);
 		textureData.SlicePitch = textureData.RowPitch * TextureHeight;
 
 		UpdateSubresources(m_commandList.Get(), m_texture.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
@@ -345,35 +345,54 @@ void D3D12HelloTexture::LoadAssets()
 // Generate a simple black and white checkerboard texture.
 std::vector<UINT8> D3D12HelloTexture::GenerateTextureData()
 {
-	const UINT rowPitch = TextureWidth * TexturePixelSize;
+	const UINT rowPitch = TextureWidth * sizeof(UINT);
 	const UINT cellPitch = rowPitch >> 3;		// The width of a cell in the checkboard texture.
 	const UINT cellHeight = TextureWidth >> 3;	// The height of a cell in the checkerboard texture.
 	const UINT textureSize = rowPitch * TextureHeight;
 
+    DirectX::XMFLOAT4 colors[NumTextureColors] =
+    {
+        DirectX::XMFLOAT4(0, 0, 0, 1), // Black
+        DirectX::XMFLOAT4(0, 0, 0, 1), // White
+        DirectX::XMFLOAT4(1, 0, 0, 1), // Red
+        DirectX::XMFLOAT4(1, 1, 0, 1), // Yellow
+        DirectX::XMFLOAT4(0, 1, 0, 1), // Green
+        DirectX::XMFLOAT4(0, 1, 1, 1), // Cyan
+        DirectX::XMFLOAT4(0, 0, 1, 1), // Blue
+        DirectX::XMFLOAT4(1, 0, 1, 1)  // Purple
+    };
+
 	std::vector<UINT8> data(textureSize);
-	UINT8* pData = &data[0];
+    UINT8* pData = &data[0];
 
-	for (UINT n = 0; n < textureSize; n += TexturePixelSize)
-	{
-		UINT x = n % rowPitch;
-		UINT y = n / rowPitch;
-		UINT i = x / cellPitch;
-		UINT j = y / cellHeight;
+    for (UINT a = 0; a < NumAlphaShades; ++a)
+    {
+        float alpha = a / (float)(NumAlphaShades - 1);
 
-		if (i % 2 == j % 2)
-		{
-			pData[n] = 0x00;		// R
-			pData[n + 1] = 0x00;	// G
-			pData[n + 2] = 0x00;	// B
-			pData[n + 3] = 0xff;	// A
-		}
-		else
-		{
-			pData[n] = 0xff;		// R
-			pData[n + 1] = 0xff;	// G
-			pData[n + 2] = 0xff;	// B
-			pData[n + 3] = 0xff;	// A
-		}
+        for (UINT c = 0; c < NumTextureColors; ++c)
+        {
+            const DirectX::XMFLOAT4& color = colors[c];
+            DirectX::XMFLOAT4 pmaColor = 
+            { 
+                color.x * alpha,
+                color.y * alpha,
+                color.z * alpha,
+                alpha
+            };
+
+            UINT y = TexturePixelSizeY * c;
+            for (UINT j = 0; j < TexturePixelSizeY; ++j, ++y)
+            {
+                for (UINT x = 0; x < TexturePixelSizeX; ++x)
+                {
+                    UINT offset = (y * TextureWidth + x) * sizeof(UINT);
+                    pData[offset + 0] = 0xFF; //(uint8_t)(pmaColor.x * 255.0f);
+                    pData[offset + 1] = 0xFF; //(uint8_t)(pmaColor.y * 255.0f);
+                    pData[offset + 2] = 0xFF; //(uint8_t)(pmaColor.z * 255.0f);
+                    pData[offset + 3] = 0xFF; //(uint8_t)(pmaColor.w * 255.0f);
+                }
+            }
+        }
 	}
 
 	return data;

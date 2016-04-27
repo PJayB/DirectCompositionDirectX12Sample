@@ -33,10 +33,13 @@ public:
 	virtual void OnDestroy();
 
 private:
+    static const UINT NumTextureColors = 8;
+    static const UINT NumAlphaShades = 8;
 	static const UINT FrameCount = 2;
 	static const UINT TextureWidth = 256;
 	static const UINT TextureHeight = 256;
-	static const UINT TexturePixelSize = 4;	// The number of bytes used to represent a pixel in the texture.
+    static const UINT TexturePixelSizeX = TextureWidth / NumAlphaShades;	// The number of bytes used to represent a pixel in the texture.
+    static const UINT TexturePixelSizeY = TextureHeight / NumTextureColors;	// The number of bytes used to represent a pixel in the texture.
 
 	struct Vertex
 	{
