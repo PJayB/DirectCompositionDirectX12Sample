@@ -110,6 +110,9 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 		}
 		return 0;
 
+    case WM_NCHITTEST:
+        return HTCAPTION;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
