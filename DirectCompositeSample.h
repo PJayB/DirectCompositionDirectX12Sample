@@ -35,7 +35,7 @@ public:
 private:
     static const UINT CircleSegments = 64;
     static const UINT NumTextureColors = 8;
-    static const UINT NumAlphaShades = 8;
+    static const UINT NumAlphaShades = 256;
 	static const UINT FrameCount = 2;
 	static const UINT TextureWidth = 256;
 	static const UINT TextureHeight = 256;
