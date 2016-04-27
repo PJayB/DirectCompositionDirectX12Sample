@@ -6,7 +6,7 @@ This sample demonstrates how to implement DirectComposition alongside DirectX 12
 For more information, see: 
 
 - [MSDN page for DirectComposition](https://msdn.microsoft.com/en-us/library/windows/desktop/hh437371(v=vs.85).aspx)
-- [Tutorial and comparison of DirectComposition vs. GDI-based techniques](http://blog.pjblewis.com/?p=95)
+- [Tutorial](http://blog.pjblewis.com/efficient-alpha-blended-windows-directcomposition/)
 
 ![DirectComposition allows efficient alpha-blending with other windows](http://i.imgur.com/PAMvWCG.png)
 
