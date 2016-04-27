@@ -39,7 +39,7 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 
 	// Create the window and store a handle to it.
 	m_hwnd = CreateWindowEx(
-        WS_EX_NOREDIRECTIONBITMAP,
+        WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST,
 		windowClass.lpszClassName,
 		pSample->GetTitle(),
 		windowStyle,
