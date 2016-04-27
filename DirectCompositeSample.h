@@ -48,7 +48,12 @@ private:
 		XMFLOAT2 uv;
 	};
 
-	// Pipeline objects.
+    // DirectComposition objects.
+    ComPtr<IDCompositionDevice> m_dcompDevice;
+    ComPtr<IDCompositionTarget> m_dcompTarget;
+    ComPtr<IDCompositionVisual> m_dcompVisual;
+    
+    // Pipeline objects.
 	D3D12_VIEWPORT m_viewport;
 	D3D12_RECT m_scissorRect;
 	ComPtr<IDXGISwapChain3> m_swapChain;

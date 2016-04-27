@@ -36,7 +36,8 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	// Create the window and store a handle to it.
-	m_hwnd = CreateWindow(
+	m_hwnd = CreateWindowEx(
+        WS_EX_NOREDIRECTIONBITMAP,
 		windowClass.lpszClassName,
 		pSample->GetTitle(),
 		WS_OVERLAPPEDWINDOW,

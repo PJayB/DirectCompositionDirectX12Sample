@@ -89,16 +89,45 @@ void DirectCompositeSample::LoadPipeline()
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.SampleDesc.Count = 1;
+    swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
 
 	ComPtr<IDXGISwapChain1> swapChain;
-	ThrowIfFailed(factory->CreateSwapChainForHwnd(
+	ThrowIfFailed(factory->CreateSwapChainForComposition(
 		m_commandQueue.Get(),		// Swap chain needs the queue so that it can force a flush on it.
-		Win32Application::GetHwnd(),
 		&swapChainDesc,
-		nullptr,
 		nullptr,
 		&swapChain
 		));
+
+    //------------------------------------------------------------------
+    // Set up DirectComposition
+    //------------------------------------------------------------------
+    
+    // Create the DirectComposition device
+    ThrowIfFailed(DCompositionCreateDevice(
+        nullptr,
+        IID_PPV_ARGS(m_dcompDevice.ReleaseAndGetAddressOf())));
+
+    // Create a DirectComposition target associated with the window (pass in hWnd here)
+    ThrowIfFailed(m_dcompDevice->CreateTargetForHwnd(
+        Win32Application::GetHwnd(),
+        true,
+        m_dcompTarget.ReleaseAndGetAddressOf()));
+
+    // Create a DirectComposition "visual"
+    ThrowIfFailed(m_dcompDevice->CreateVisual(m_dcompVisual.ReleaseAndGetAddressOf()));
+
+    // Associate the visual with the swap chain
+    ThrowIfFailed(m_dcompVisual->SetContent(swapChain.Get()));
+
+    // Set the visual as the root of the DirectComposition target's composition tree
+    ThrowIfFailed(m_dcompTarget->SetRoot(m_dcompVisual.Get()));
+    ThrowIfFailed(m_dcompDevice->Commit());
+
+    //------------------------------------------------------------------
+    // DirectComposition setup end
+    //------------------------------------------------------------------
+
 
 	// This sample does not support fullscreen transitions.
 	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));

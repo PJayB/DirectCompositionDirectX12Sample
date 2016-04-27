@@ -28,10 +28,11 @@ PSInput VSMain(float4 position : POSITION, float4 uv : TEXCOORD)
     sincos(g_rotation, theta.x, theta.y);
 
     float2x2 rotate2D = { theta.y, -theta.x, theta.x, theta.y };
-    position.xz = mul(position.xz, rotate2D);
 
-	result.position = float4(position.xy, 0, 1);
-	result.uv = uv;
+    float2 offset = float2(0.5f, 0.5f);
+
+    result.position = position;
+	result.uv = mul(rotate2D, uv - offset) + offset;
 
 	return result;
 }
