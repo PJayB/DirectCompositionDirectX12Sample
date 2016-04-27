@@ -199,7 +199,25 @@ void D3D12HelloTexture::LoadAssets()
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 		};
 
-		// Describe and create the graphics pipeline state object (PSO).
+        const D3D12_BLEND_DESC AlphaBlend =
+        {
+            FALSE, // AlphaToCoverageEnable
+            FALSE, // IndependentBlendEnable
+            {
+                TRUE, // BlendEnable
+                FALSE, // LogicOpEnable
+            D3D12_BLEND_ONE, // SrcBlend
+            D3D12_BLEND_INV_SRC_ALPHA, // DestBlend
+            D3D12_BLEND_OP_ADD, // BlendOp
+            D3D12_BLEND_ONE, // SrcBlendAlpha
+            D3D12_BLEND_INV_SRC_ALPHA, // DestBlendAlpha
+            D3D12_BLEND_OP_ADD, // BlendOpAlpha
+            D3D12_LOGIC_OP_CLEAR, // LogicOp
+            D3D12_COLOR_WRITE_ENABLE_ALL // RenderTargetWriteMask
+            }
+        };
+        
+        // Describe and create the graphics pipeline state object (PSO).
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
 		psoDesc.pRootSignature = m_rootSignature.Get();
@@ -207,7 +225,7 @@ void D3D12HelloTexture::LoadAssets()
 		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        psoDesc.BlendState = AlphaBlend;
 		psoDesc.DepthStencilState.DepthEnable = FALSE;
 		psoDesc.DepthStencilState.StencilEnable = FALSE;
 		psoDesc.SampleMask = UINT_MAX;
