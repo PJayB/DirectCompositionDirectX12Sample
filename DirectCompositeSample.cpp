@@ -447,13 +447,13 @@ std::vector<UINT8> DirectCompositeSample::GenerateTextureData()
 
     DirectX::XMFLOAT4 colors[NumTextureColors] =
     {
+        DirectX::XMFLOAT4(1, 0, 0, 1), // Red
+        DirectX::XMFLOAT4(0, 1, 0, 1), // Green
+        DirectX::XMFLOAT4(0, 0, 1, 1), // Blue
         DirectX::XMFLOAT4(0, 0, 0, 1), // Black
         DirectX::XMFLOAT4(1, 1, 1, 1), // White
-        DirectX::XMFLOAT4(1, 0, 0, 1), // Red
         DirectX::XMFLOAT4(1, 1, 0, 1), // Yellow
-        DirectX::XMFLOAT4(0, 1, 0, 1), // Green
         DirectX::XMFLOAT4(0, 1, 1, 1), // Cyan
-        DirectX::XMFLOAT4(0, 0, 1, 1), // Blue
         DirectX::XMFLOAT4(1, 0, 1, 1)  // Purple
     };
 
