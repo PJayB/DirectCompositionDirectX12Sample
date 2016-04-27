@@ -353,7 +353,7 @@ std::vector<UINT8> D3D12HelloTexture::GenerateTextureData()
     DirectX::XMFLOAT4 colors[NumTextureColors] =
     {
         DirectX::XMFLOAT4(0, 0, 0, 1), // Black
-        DirectX::XMFLOAT4(0, 0, 0, 1), // White
+        DirectX::XMFLOAT4(1, 1, 1, 1), // White
         DirectX::XMFLOAT4(1, 0, 0, 1), // Red
         DirectX::XMFLOAT4(1, 1, 0, 1), // Yellow
         DirectX::XMFLOAT4(0, 1, 0, 1), // Green
@@ -368,6 +368,8 @@ std::vector<UINT8> D3D12HelloTexture::GenerateTextureData()
     for (UINT a = 0; a < NumAlphaShades; ++a)
     {
         float alpha = a / (float)(NumAlphaShades - 1);
+        UINT start_x = a * TexturePixelSizeX;
+        UINT end_x = start_x + TexturePixelSizeX;
 
         for (UINT c = 0; c < NumTextureColors; ++c)
         {
@@ -380,16 +382,17 @@ std::vector<UINT8> D3D12HelloTexture::GenerateTextureData()
                 alpha
             };
 
-            UINT y = TexturePixelSizeY * c;
-            for (UINT j = 0; j < TexturePixelSizeY; ++j, ++y)
+            UINT start_y = TexturePixelSizeY * c;
+            UINT end_y = start_y + TexturePixelSizeY;
+            for (UINT y = start_y; y < end_y; ++y)
             {
-                for (UINT x = 0; x < TexturePixelSizeX; ++x)
+                for (UINT x = start_x; x < end_x; ++x)
                 {
                     UINT offset = (y * TextureWidth + x) * sizeof(UINT);
-                    pData[offset + 0] = 0xFF; //(uint8_t)(pmaColor.x * 255.0f);
-                    pData[offset + 1] = 0xFF; //(uint8_t)(pmaColor.y * 255.0f);
-                    pData[offset + 2] = 0xFF; //(uint8_t)(pmaColor.z * 255.0f);
-                    pData[offset + 3] = 0xFF; //(uint8_t)(pmaColor.w * 255.0f);
+                    pData[offset + 0] = (uint8_t)(pmaColor.x * 255.0f);
+                    pData[offset + 1] = (uint8_t)(pmaColor.y * 255.0f);
+                    pData[offset + 2] = (uint8_t)(pmaColor.z * 255.0f);
+                    pData[offset + 3] = (uint8_t)(pmaColor.w * 255.0f);
                 }
             }
         }
