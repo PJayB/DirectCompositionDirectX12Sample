@@ -14,6 +14,14 @@
 
 HWND Win32Application::m_hwnd = nullptr;
 
+static void SetClippingRegion(HWND hWnd)
+{
+    RECT rect = {};
+    GetWindowRect(hWnd, &rect);
+    HRGN rgn = CreateEllipticRgnIndirect(&rect);
+    SetWindowRgn(hWnd, rgn, false);
+}
+
 int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 {
 	// Parse the command line parameters
@@ -52,6 +60,9 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 		hInstance,
 		pSample);
 
+    // Set the clipping region
+    SetClippingRegion(m_hwnd);
+    
 	// Initialize the sample. OnInit is defined in each child-implementation of DXSample.
 	pSample->OnInit();
 
